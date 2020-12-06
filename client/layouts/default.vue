@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Navigation />
     <Nuxt />
   </div>
 </template>
@@ -22,6 +23,15 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body{
+  color: white;
+}
+
+h1{
+  letter-spacing: 3px;
 }
 
 *,
