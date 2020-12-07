@@ -3,8 +3,8 @@
     <ul>
       <li><a class="active" href="#home">Home</a></li>
       <li><a href="#news">Favorites</a></li>
-      <li><a href="#contact">Login</a></li>
-      <li><a href="#about">Signup</a></li>
+      <li style="float:right"><a href="/signup">Signup</a></li>
+      <li style="float:right"><a href="/login">Login</a></li>
     </ul>
   </div>
 </template>
