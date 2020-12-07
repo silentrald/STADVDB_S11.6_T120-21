@@ -1,8 +1,8 @@
 <template>
   <div>
     <ul>
-      <li><a class="active" href="#home">Home</a></li>
-      <li><a href="#news">Favorites</a></li>
+      <li><a class="active" href="/">Home</a></li>
+      <li><a href="/favorites">Favorites</a></li>
       <li style="float:right"><a href="/signup">Signup</a></li>
       <li style="float:right"><a href="/login">Login</a></li>
     </ul>

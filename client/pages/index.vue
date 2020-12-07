@@ -3,8 +3,8 @@
     <div class="main-background">
       <div class="main">
         <div>
-          <a class="logo" href="#content"><img src="https://fontmeme.com/permalink/201206/f716efe3a630e7bf12ba0e75c6f14b4b.png"></a>
-          <h1>Netflix Searching Revamped</h1>
+          <a href="#content"><img class="logo" src="https://fontmeme.com/permalink/201206/f716efe3a630e7bf12ba0e75c6f14b4b.png"></a>
+          <h1 style="font-size: 28pt;">Netflix Searching Revamped</h1>
         </div>
       </div>
     </div>
@@ -39,14 +39,12 @@ export default {}
   border-radius: 10px;
   border: solid #757575 2px;
   color: white;
-}
-
-textarea:focus, input:focus{
-    outline: none;
+  font-weight: bold;
 }
 
 .logo {
   display: block;
+  width: 600px;
   transition: 0.3s;
 }
 
@@ -55,7 +53,8 @@ textarea:focus, input:focus{
 }
 
 .main-background {
-  background-image: url("https://thesmartlocal.com/wp-content/uploads/2019/07/netflix-originals-14.png");
+  background-image: url("https://www.lifesavvy.com/thumbcache/0/0/62097272cd066416dcd893f174555918/p/uploads/2020/01/deb2e2c6.jpg");
+  background-size: cover;
 }
 
 .main {
@@ -66,7 +65,7 @@ textarea:focus, input:focus{
   align-items: center;
   text-align: center;
   background: rgb(28,28,28);
-  background: linear-gradient(0deg, rgba(28,28,28,1) 0%, rgba(38,38,38,0.95) 20%);
+  background: linear-gradient(0deg, rgba(28,28,28,1) 0%, rgba(38,38,38,0.8) 20%);
 }
 
 .content {

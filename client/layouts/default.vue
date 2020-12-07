@@ -6,6 +6,10 @@
 </template>
 
 <style>
+textarea:focus, input:focus{
+    outline: none;
+}
+
 html {
   font-family:
     'Source Sans Pro',
@@ -28,10 +32,6 @@ html {
 
 body{
   color: white;
-}
-
-h1{
-  letter-spacing: 3px;
 }
 
 *,
