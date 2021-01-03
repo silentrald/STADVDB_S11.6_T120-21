@@ -18,9 +18,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get('/', (_req, res) => {
-    res.send('Hello World');
-});
+// ROUTERS
+const steamRtr = require('./routers/steamRtr');
+
+app.use('/api/steam', steamRtr);
 
 app.listen(PORT, () => {
     console.log(`Listening to port ${PORT}`);
