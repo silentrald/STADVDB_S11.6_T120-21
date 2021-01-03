@@ -59,39 +59,103 @@ const steamAPI = {
     getGames: async (req, res) => {
         let {
             name,
-            publisher,
-            developer,
-            platform,
             offset,
             limit
         } = req.query;
 
         name = name ? `${name}%` : '%';
-        publisher = publisher ? `${publisher}%` : '%';
-        developer = developer ? `${developer}%` : '%';
 
         try {
-            const querySelGames = {
+            const query = {
                 text: `
                     SELECT      *
                     FROM        steam_profiles
                     WHERE       name        ILIKE $1
-                        OR      developer   ILIKE $2
-                        OR      publisher   ILIKE $3
-                        OR      platform    ILIKE $4
+                    ORDER BY    appid
+                    OFFSET      ${offset}
+                    LIMIT       ${limit};
+                `,
+                values: [ name ]
+            };
+            
+            // TODO: Get time here
+            const { rows: games, rowCount } = await db.query(query);
+            if (rowCount === 0) {
+                return res.status(404).send();
+            }
+
+            return res.status(200).send({ games });
+        } catch (err) {
+            console.log(err);
+
+            return res.status(500).send();
+        }
+    },
+
+    getGamesByDevAndPub: async (req, res) => {
+        let {
+            publisher,
+            developer,
+            offset,
+            limit
+        } = req.query;
+
+        publisher = publisher ? `${publisher}%` : '%';
+        developer = developer ? `${developer}%` : '%';
+
+        try {
+            const query = {
+                text: `
+                    SELECT      *
+                    FROM        steam_profiles
+                    WHERE       developer   ILIKE $1
+                        OR      publisher   ILIKE $2
+                    ORDER BY    appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
                 `,
                 values: [
-                    name,
                     developer,
-                    publisher,
-                    platform
+                    publisher
                 ]
             };
             
             // TODO: Get time here
-            const { rows: games, rowCount } = await db.query(querySelGames);
+            const { rows: games, rowCount } = await db.query(query);
+            if (rowCount === 0) {
+                return res.status(404).send();
+            }
+
+            return res.status(200).send({ games });
+        } catch (err) {
+            console.log(err);
+
+            return res.status(500).send();
+        }
+    },
+
+    getGamesByPlatform: async (req, res) => {
+        let {
+            platform,
+            offset,
+            limit
+        } = req.query;
+
+        try {
+            const query = {
+                text: `
+                    SELECT      *
+                    FROM        steam_profiles
+                    WHERE       platform    ILIKE $1
+                    ORDER BY    appid
+                    OFFSET      ${offset}
+                    LIMIT       ${limit};
+                `,
+                values: [ platform ]
+            };
+            
+            // TODO: Get time here
+            const { rows: games, rowCount } = await db.query(query);
             if (rowCount === 0) {
                 return res.status(404).send();
             }
@@ -130,6 +194,7 @@ const steamAPI = {
                             FROM    steam_profiles
                             WHERE   positive_ratings - negative_ratings > $3
                         ) AS profiles   ON details.appid=profiles.appid
+                    ORDER BY    appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
                 `,
@@ -184,6 +249,7 @@ const steamAPI = {
 
             text += `
                 ) as tags   ON appid=steam_appid
+                ORDER BY    appid
                 OFFSET  ${offset}
                 LIMIT   ${limit};
             `;
@@ -201,24 +267,6 @@ const steamAPI = {
 
     getTopTagGames: async (_req, res) => {
         try {
-            // const tags = [
-            //     'action',
-            //     'multiplayer',
-            //     'fps',
-            //     'sci_fi',
-            //     'classic',
-            //     'co_op',
-            //     'arcade',
-            //     'card_game',
-            //     'drama',
-            //     'puzzle',
-            //     'survival',
-            //     'rpg',
-            //     'indie',
-            //     'moba',
-            //     'shooter'
-            // ];
-
             let query = `
                 SELECT      *
                 FROM        steam_profiles AS profiles
