@@ -3,7 +3,7 @@ const api = require('../api/steamAPI');
 const mw = require('../middlewares/steamMw');
 
 // GET
-router.get('/:appID',
+router.get('/id/:appID',
     mw.sanitizeOffsetAndLimit,
     api.getGame);
 

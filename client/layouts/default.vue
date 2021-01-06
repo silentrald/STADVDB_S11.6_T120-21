@@ -1,62 +1,57 @@
 <template>
   <div>
-    <Nuxt />
+    <Navbar />
+    <div id="main-container">
+      <Nuxt />
+    </div>
+    <Footer />
   </div>
 </template>
 
+<script>
+export default {}
+</script>
+
 <style>
-html {
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
+body {
+  color: #acb2b8;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #1b2838;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
+h1 {
+  color: white;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
 }
 
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
+.bg-dark{
+  background-color: #171a21 !important;
 }
 
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
+.card {
+  background-color: #1f2e41;
+  border: 1px solid #26384f;
+
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
+.card-header {
+  background: rgb(57,81,116);
+  background: linear-gradient(162deg, rgba(57,81,116,1) 0%, rgba(48,69,98,1) 51%, rgba(33,48,68,1) 100%);
 }
 
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+.search-buttons {
+  background: rgb(33,101,139);
+  background: linear-gradient(180deg, rgba(33,101,139,1) 0%, rgba(23,67,92,1) 100%);
+  color: #a4d7f5;
+
+  border: 1px solid #2f89bc;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.steam-fields {
+  background-color: #223a4c;
+  border: 1px solid black;
 }
 </style>

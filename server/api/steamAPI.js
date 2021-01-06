@@ -1,5 +1,12 @@
 const db = require('../db');
 
+const timeExecution = async (promise) => {
+    const start = new Date();
+    const result = await promise;
+    const time = new Date() - start;
+    return { result, time };
+};
+
 const steamAPI = {
     // GET
     /**
@@ -26,25 +33,26 @@ const steamAPI = {
                         ) AS details    ON  profiles.appid=details.appid
                         JOIN    (
                             SELECT  *
-                            FROM    steam_support_data
+                            FROM    steam_supports
                             WHERE   appid=$1
                         ) AS supports   ON  profiles.appid=supports.appid
                         JOIN    (
                             SELECT  *
-                            FROM    steamspy_tag_data
+                            FROM    steamspy_tags
                             WHERE   appid=$1
                         ) AS tags       ON  profiles.appid=tags.appid
                     LIMIT       1;
                 `,
                 values: [ appID ]
             };
-
-            const { rows: games, rowCount } = await db.query(query);
+            
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games, rowCount } = result;
             if (rowCount === 0) {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({ game: games[0] });
+            return res.status(200).send({ game: games[0], time });
         } catch (err) {
             console.log(err);
 
@@ -55,36 +63,28 @@ const steamAPI = {
     /**
      * Gets games depending on the filter options given
      */
-    // TODO: fix this
     getGames: async (req, res) => {
         let {
-            name,
             offset,
             limit
         } = req.query;
 
-        name = name ? `${name}%` : '%';
-
         try {
-            const query = {
-                text: `
-                    SELECT      *
-                    FROM        steam_profiles
-                    WHERE       name        ILIKE $1
-                    ORDER BY    appid
-                    OFFSET      ${offset}
-                    LIMIT       ${limit};
-                `,
-                values: [ name ]
-            };
-            
-            // TODO: Get time here
-            const { rows: games, rowCount } = await db.query(query);
+            const query = `
+                SELECT      *
+                FROM        steam_profiles
+                ORDER BY    appid
+                OFFSET      ${offset}
+                LIMIT       ${limit};
+            `;
+
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games, rowCount } = result;
             if (rowCount === 0) {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 
@@ -109,7 +109,7 @@ const steamAPI = {
                     SELECT      *
                     FROM        steam_profiles
                     WHERE       developer   ILIKE $1
-                        OR      publisher   ILIKE $2
+                        AND     publisher   ILIKE $2
                     ORDER BY    appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
@@ -120,13 +120,13 @@ const steamAPI = {
                 ]
             };
             
-            // TODO: Get time here
-            const { rows: games, rowCount } = await db.query(query);
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games, rowCount } = result;
             if (rowCount === 0) {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 
@@ -141,12 +141,15 @@ const steamAPI = {
             limit
         } = req.query;
 
+        platform = typeof(platform) === 'string'
+            ? `%${platform}%` : '%';
+
         try {
             const query = {
                 text: `
                     SELECT      *
                     FROM        steam_profiles
-                    WHERE       platform    ILIKE $1
+                    WHERE       platforms ILIKE $1
                     ORDER BY    appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
@@ -154,13 +157,13 @@ const steamAPI = {
                 values: [ platform ]
             };
             
-            // TODO: Get time here
-            const { rows: games, rowCount } = await db.query(query);
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games, rowCount } = result;
             if (rowCount === 0) {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 
@@ -180,6 +183,37 @@ const steamAPI = {
             limit
         } = req.query;
 
+        let ratingsL, ratingsH;
+        switch(ratings) {
+        case 'opos':
+            ratingsH = 100;
+            ratingsL = 95;
+            break;
+        case 'vpos':
+            ratingsH = 94;
+            ratingsL = 80;
+            break;
+        case 'mpos':
+            ratingsH = 79;
+            ratingsL = 70;
+            break;
+        case 'pos':
+            ratingsH = 100;
+            ratingsL = 70;
+            break;
+        case 'mix':
+            ratingsH = 69;
+            ratingsL = 40;
+            break;
+        case 'mneg':
+            ratingsH = 39;
+            ratingsL = 20;
+            break;
+        case 'vneg':
+            ratingsH = 19;
+            ratingsL = 0;
+        }
+
         try {
             const query = {
                 text: `
@@ -190,28 +224,30 @@ const steamAPI = {
                             WHERE   price   BETWEEN $1 AND $2    
                         ) AS details
                         JOIN    (
-                            SELECT  *
+                            SELECT  *,
+                            (positive_ratings / (positive_ratings + negative_ratings)) * 100 AS true_rating
                             FROM    steam_profiles
-                            WHERE   positive_ratings - negative_ratings > $3
-                        ) AS profiles   ON details.appid=profiles.appid
-                    ORDER BY    appid
+                        ) AS profiles   ON  details.appid=profiles.appid
+                                        AND true_ratings BETWEEN $3 AND $4
+                    ORDER BY    details.appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
                 `,
                 values: [
                     priceL,
                     priceH,
-                    ratings
+                    ratingsL,
+                    ratingsH
                 ]
             };
             
-            // TODO: Get time here
-            const { rows: games, rowCount } = await db.query(query);
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games, rowCount } = result;
             if (rowCount === 0) {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 
@@ -239,7 +275,7 @@ const steamAPI = {
                 FROM        steam_profiles
                     JOIN    (
                         SELECT  *
-                        FROM    steamspy_tag_data
+                        FROM    steamspy_tags
             `;
             
             for (const index in tags) {
@@ -254,10 +290,10 @@ const steamAPI = {
                 LIMIT   ${limit};
             `;
 
-            // TODO: Get time here
-            const { rows: games } = await db.query(text);
+            const { result, time } = await timeExecution(db.query(text));
+            const { rows: games } = result;
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 
@@ -272,7 +308,7 @@ const steamAPI = {
                 FROM        steam_profiles AS profiles
                     JOIN    (
                         SELECT      *
-                        FROM        steamspy_tag_data
+                        FROM        steamspy_tags
                             JOIN    (
                                 SELECT      MAX(action)         AS max_action,
                                             MAX(multiplayer)    AS max_multiplayer,        
@@ -289,8 +325,7 @@ const steamAPI = {
                                             MAX(indie)          AS max_indie,
                                             MAX(moba)           AS max_moba,
                                             MAX(shooter)        AS max_shooter
-                                FROM        steamspy_tag_data
-                                GROUP BY    appid
+                                FROM        steamspy_tags
                             ) as top_tags
                                 ON  max_action=action
                                 OR  max_multiplayer=multiplayer
@@ -312,9 +347,10 @@ const steamAPI = {
                                     ON  profiles.appid=details.appid;
             `;
 
-            const { rows: games } = await db.query(query);
+            const { result, time } = await timeExecution(db.query(query));
+            const { rows: games } = result;
 
-            return res.status(200).send({ games });
+            return res.status(200).send({ games, time });
         } catch (err) {
             console.log(err);
 

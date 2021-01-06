@@ -1,7 +1,7 @@
-const express       = require('express');
+const express = require('express');
 
-const bodyParser    = require('body-parser');
-const cors          = require('cors');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 require('dotenv').config();
 
@@ -11,7 +11,7 @@ const PORT = process.env.PORT | 5000;
 
 // MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
-    app.use(require('morgan')('dev')); // import morgan
+    app.use(require('morgan')('dev'));
 }
 
 app.use(cors());

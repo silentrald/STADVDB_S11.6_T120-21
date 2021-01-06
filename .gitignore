@@ -1,2 +1,4 @@
 convert
 .DS_Store
+
+.env
