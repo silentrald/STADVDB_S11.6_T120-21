@@ -23,7 +23,7 @@ router.get('/pr-rate',
     mw.sanitizeOffsetAndLimit,
     api.getGamesByPriceAndRatings);
 
-router.get('/t',
+router.get('/tags',
     mw.sanitizeOffsetAndLimit,
     api.getGamesByTags);
 

@@ -228,7 +228,7 @@ const steamAPI = {
                             (positive_ratings / (positive_ratings + negative_ratings)) * 100 AS true_rating
                             FROM    steam_profiles
                         ) AS profiles   ON  details.appid=profiles.appid
-                                        AND true_ratings BETWEEN $3 AND $4
+                                        AND true_rating BETWEEN $3 AND $4
                     ORDER BY    details.appid
                     OFFSET      ${offset}
                     LIMIT       ${limit};
@@ -272,23 +272,25 @@ const steamAPI = {
 
             let text = `
                 SELECT      *
-                FROM        steam_profiles
+                FROM        steam_profiles AS profiles
                     JOIN    (
                         SELECT  *
                         FROM    steamspy_tags
             `;
             
             for (const index in tags) {
-                // WHERE action > 0 | OR action > 0
-                text += `${index === 0 ? 'WHERE' : 'OR'} ${tags[index]} > 0\n`;
+                // WHERE action === 0 | OR action > 0
+                text += `${index === '0' ? 'WHERE' : 'OR'} ${tags[index]} > 0\n`;
             }
 
             text += `
-                ) as tags   ON appid=steam_appid
-                ORDER BY    appid
-                OFFSET  ${offset}
-                LIMIT   ${limit};
+                ) as tags   ON profiles.appid=tags.appid
+                ORDER BY    profiles.appid
+                OFFSET      ${offset}
+                LIMIT       ${limit};
             `;
+
+            console.log(text);
 
             const { result, time } = await timeExecution(db.query(text));
             const { rows: games } = result;
