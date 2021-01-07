@@ -14,14 +14,14 @@
           <div class="form-group" style="display: flex;">
             <input
               id="low-range"
-              v-model="rangeL"
+              v-model="priceL"
               class="steam-fields w-50 mr-3 p-1"
               placeholder="Low"
             >
             <b>-</b>
             <input
               id="high-range"
-              v-model="rangeH"
+              v-model="priceH"
               class="steam-fields w-50 ml-3 p-1"
               placeholder="High"
             >
@@ -104,8 +104,8 @@
 export default {
   data () {
     return {
-      priceL: 0,
-      priceH: 0,
+      priceL: '',
+      priceH: '',
       ratings: 'opos',
       games: [],
       time: 0,

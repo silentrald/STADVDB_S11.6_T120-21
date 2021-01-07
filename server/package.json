@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node app",
     "dev": "nodemon app",
     "init-user": "node migrations/init-user",
     "migrate-up": "node migrations/up",
