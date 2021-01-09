@@ -53,5 +53,6 @@ h1 {
 .steam-fields {
   background-color: #223a4c;
   border: 1px solid black;
+  color: white;
 }
 </style>
