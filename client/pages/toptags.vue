@@ -14,7 +14,8 @@
           v-for="game in games"
           :key="game.appid"
         >
-          {{ game.name }}
+          <card />
+          <!--{{ game.name }}-->
         </div>
       </div>
     </div>

@@ -44,7 +44,6 @@
       >
         Search
       </button>
-
       <div class="card mt-3">
         <div class="card-body">
           <h1>
@@ -66,7 +65,8 @@
             v-else
             :key="game.appid"
           >
-            {{ game.name }}
+            <card />
+            <!--{{ game.name }}-->
           </div>
         </div>
       </div>

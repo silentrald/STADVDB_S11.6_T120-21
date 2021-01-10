@@ -41,6 +41,10 @@ h1 {
   background: linear-gradient(162deg, rgba(57,81,116,1) 0%, rgba(48,69,98,1) 51%, rgba(33,48,68,1) 100%);
 }
 
+.card-data {
+  font-size: 10pt;
+}
+
 .search-buttons {
   background: rgb(33,101,139);
   background: linear-gradient(180deg, rgba(33,101,139,1) 0%, rgba(23,67,92,1) 100%);
