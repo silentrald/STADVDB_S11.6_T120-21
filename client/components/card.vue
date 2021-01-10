@@ -10,8 +10,8 @@
         <b>Overwhelmingly Positive</b>
       </h5>
       <p title="appid#" class="card-data mb-0">
-        # {{ game.appid }} <br> <!-- di ko sure -->
-      </p>
+        # {{ game.appid }} <br>
+      </p> <!--
       <p v-if="developer" class="card-data">
         Publisher:  {{ game.publisher }} <br>
         Developer:  {{ game.developer }} <br>
@@ -28,6 +28,7 @@
       <p v-if="toptags" class="card-data">
         Categories: {{ game.categories }}<br>
       </p>
+      -->
     </div>
   </div>
 </template>

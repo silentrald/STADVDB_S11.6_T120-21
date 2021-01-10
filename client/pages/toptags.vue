@@ -15,7 +15,6 @@
           :key="game.appid"
         >
           <card />
-          test
           <!--{{ game.name }}-->
         </div>
       </div>
