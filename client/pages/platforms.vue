@@ -73,8 +73,8 @@
           </span>
         </h1>
         <div v-for="game in games" :key="game.appid">
-          <card />
-          <!--{{ game.name }}-->
+          <!--<card />-->
+          {{ game.name }}
         </div>
       </div>
     </div>

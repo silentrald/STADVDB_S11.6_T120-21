@@ -61,8 +61,8 @@
           v-else
           :key="game.appid"
         >
-          <card />
-          <!--{{ game.name }}-->
+          <!--<card />-->
+          {{ game.name }}
         </div>
       </div>
     </div>
