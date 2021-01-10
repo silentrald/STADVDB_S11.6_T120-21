@@ -23,6 +23,15 @@
             <datalist id="taglist">
               <option v-for="tag in tagList" :key="tag" :value="tag" />
             </datalist>
+
+            <button
+              type="button"
+              class="search-buttons btn mr-3"
+              @click="toggle()"
+            >
+              {{ query }}
+            </button>
+
             <button
               type="button"
               class="search-buttons btn"
@@ -75,6 +84,7 @@ export default {
     return {
       tagInput: '',
       tags: [],
+      query: 'Optimized',
       games: [],
       time: 0,
       error: 0,
@@ -99,6 +109,10 @@ export default {
   },
 
   methods: {
+    toggle () {
+      this.query = this.query === 'Optimized' ? 'Original' : 'Optimized'
+    },
+
     addTagInput () {
       if (!this.tags.includes(this.tagInput)) {
         if (this.tagList.includes(this.tagInput)) {
@@ -124,7 +138,8 @@ export default {
 
         const { data } = await this.$axios.get('/api/steam/tags', {
           params: {
-            tags: this.tags
+            tags: this.tags,
+            query: this.query === 'Optimized' ? 'op' : 'or'
           }
         })
         this.$set(this, 'games', data.games)

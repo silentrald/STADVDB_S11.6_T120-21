@@ -64,13 +64,22 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="search-buttons w-100 btn mt-3"
-      @click="search()"
-    >
-      Search
-    </button>
+    <div class="d-flex flex-column">
+      <button
+        type="button"
+        class="search-buttons w-40 btn mt-3"
+        @click="toggle()"
+      >
+        {{ query }}
+      </button>
+      <button
+        type="button"
+        class="search-buttons w-40 btn mt-3"
+        @click="search()"
+      >
+        Search
+      </button>
+    </div>
 
     <div class="card mt-3">
       <div class="card-body">
@@ -108,6 +117,7 @@ export default {
       priceL: '',
       priceH: '',
       ratings: 'opos',
+      query: 'Optimized',
       games: [],
       time: 0,
       error: 0
@@ -115,6 +125,10 @@ export default {
   },
 
   methods: {
+    toggle () {
+      this.query = this.query === 'Optimized' ? 'Original' : 'Optimized'
+    },
+
     async search () {
       try {
         this.$set(this, 'error', 0)
@@ -123,7 +137,8 @@ export default {
           params: {
             priceL: this.priceL,
             priceH: this.priceH,
-            ratings: this.ratings
+            ratings: this.ratings,
+            query: this.query === 'Optimized' ? 'op' : 'or'
           }
         })
         this.$set(this, 'games', data.games)

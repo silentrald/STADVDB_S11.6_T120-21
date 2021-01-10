@@ -51,13 +51,22 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="search-buttons w-100 btn mt-3"
-      @click="search()"
-    >
-      Search
-    </button>
+    <div class="d-flex flex-column">
+      <button
+        type="button"
+        class="search-buttons w-40 btn mt-3"
+        @click="toggle()"
+      >
+        {{ query }}
+      </button>
+      <button
+        type="button"
+        class="search-buttons w-40 btn mt-3"
+        @click="search()"
+      >
+        Search
+      </button>
+    </div>
 
     <div class="card mt-3">
       <div class="card-body">
@@ -86,16 +95,22 @@ export default {
   data () {
     return {
       platform: 'windows',
+      query: 'Optimized',
       games: [],
       time: 0
     }
   },
 
   methods: {
+    toggle () {
+      this.query = this.query === 'Optimized' ? 'Original' : 'Optimized'
+    },
+
     async search () {
       const { data } = await this.$axios.get('/api/steam/pl', {
         params: {
-          platform: this.platform
+          platform: this.platform,
+          query: this.query === 'Optimized' ? 'op' : 'or'
         }
       })
       this.$set(this, 'games', data.games)

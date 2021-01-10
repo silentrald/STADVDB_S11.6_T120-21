@@ -180,7 +180,8 @@ const steamAPI = {
             priceH,
             ratings,
             offset,
-            limit
+            limit,
+            query: type
         } = req.query;
 
         let ratingsL, ratingsH;
@@ -215,18 +216,19 @@ const steamAPI = {
         }
 
         try {
-            const query = {
+            const query = type === 'op' ? {
                 text: `
                     SELECT      *
                     FROM        (
                             SELECT  *
                             FROM    steam_details
-                            WHERE   price   BETWEEN $1 AND $2    
+                            WHERE   price   BETWEEN $1 AND $2
                         ) AS details
                         JOIN    (
                             SELECT  *,
-                            (positive_ratings / (positive_ratings + negative_ratings)) * 100 AS true_rating
+                                    (positive_ratings * 100 / (positive_ratings + negative_ratings)) AS true_rating
                             FROM    steam_profiles
+                            WHERE   positive_ratings + negative_ratings > 0
                         ) AS profiles   ON  details.appid=profiles.appid
                                         AND true_rating BETWEEN $3 AND $4
                     ORDER BY    details.appid
@@ -238,6 +240,27 @@ const steamAPI = {
                     priceH,
                     ratingsL,
                     ratingsH
+                ]
+            } : {
+                text: `
+                    SELECT      *
+                    FROM        steam_details AS details
+                        JOIN    (
+                            SELECT  *
+                            FROM    steam_profiles
+                            WHERE   positive_ratings + negative_ratings > 0
+                                AND (positive_ratings * 100 / (positive_ratings + negative_ratings)) BETWEEN $1 AND $2
+                    ) AS profiles ON  details.appid=profiles.appid
+                    WHERE    price    BETWEEN $3 AND $4
+                    ORDER BY    details.appid
+                    OFFSET      ${offset}
+                    LIMIT       ${limit};
+                `,
+                values: [
+                    ratingsL,
+                    ratingsH,
+                    priceL,
+                    priceH
                 ]
             };
             
@@ -262,7 +285,8 @@ const steamAPI = {
         let {
             tags,
             offset,
-            limit
+            limit,
+            query: type
         } = req.query;
 
         try {
@@ -270,12 +294,17 @@ const steamAPI = {
                 tags = [ tags ];
             }
 
-            let text = `
+            let text = type === 'op' ? `
                 SELECT      *
                 FROM        steam_profiles AS profiles
                     JOIN    (
                         SELECT  *
                         FROM    steamspy_tags
+            ` : `
+                SELECT      *
+                FROM        steam_profiles  AS profiles
+                    JOIN    steamspy_tags   AS tags
+                        ON  profiles.appid=tags.appid
             `;
             
             for (const index in tags) {
@@ -283,14 +312,15 @@ const steamAPI = {
                 text += `${index === '0' ? 'WHERE' : 'OR'} ${tags[index]} > 0\n`;
             }
 
+            if (type === 'op') {
+                text += ') as tags   ON profiles.appid=tags.appid\n';
+            }
+
             text += `
-                ) as tags   ON profiles.appid=tags.appid
                 ORDER BY    profiles.appid
                 OFFSET      ${offset}
                 LIMIT       ${limit};
             `;
-
-            console.log(text);
 
             const { result, time } = await timeExecution(db.query(text));
             const { rows: games } = result;
@@ -303,9 +333,10 @@ const steamAPI = {
         }
     },
 
-    getTopTagGames: async (_req, res) => {
+    getTopTagGames: async (req, res) => {
+        const { query: type } = req.query;
         try {
-            let query = `
+            let query = type === 'op' ? `
                 SELECT      *
                 FROM        steam_profiles AS profiles
                     JOIN    (
@@ -347,6 +378,164 @@ const steamAPI = {
                     ) as top_ids    ON  profiles.appid=top_ids.appid
                     JOIN    steam_details AS details
                                     ON  profiles.appid=details.appid;
+            ` : `
+            SELECT      *
+            FROM        (
+                SELECT  *
+                FROM    steam_profiles
+                WHERE   appid IN (
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(action) AS max_action
+                            FROM        steamspy_tags
+                        ) as t_action    ON    max_action=action
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(multiplayer) AS max_multiplayer
+                            FROM        steamspy_tags
+                        ) as t_multiplayer    ON    max_multiplayer=multiplayer
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(fps) AS max_fps
+                            FROM        steamspy_tags
+                        ) as t_fps      ON    max_fps=fps
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(sci_fi)         AS max_sci_fi
+                            FROM        steamspy_tags
+                        ) as t_sci_fi    ON    max_sci_fi=sci_fi
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(classic) AS max_classic
+                            FROM        steamspy_tags
+                        ) as t_classic  ON    max_classic=classic
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(co_op) AS max_co_op
+                            FROM        steamspy_tags
+                        ) as t_co_op    ON    max_co_op=co_op
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(arcade) AS max_arcade
+                            FROM        steamspy_tags
+                        ) as t_arcade   ON    max_arcade=arcade
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(card_game) AS max_card_game
+                            FROM        steamspy_tags
+                        ) as t_card_game    ON    max_card_game=card_game
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(drama) AS max_drama
+                            FROM        steamspy_tags
+                        ) as t_drama    ON    max_drama=drama
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(puzzle) AS max_puzzle
+                            FROM        steamspy_tags
+                        ) as t_puzzle    ON    max_puzzle=puzzle
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(survival) AS max_survival
+                            FROM        steamspy_tags
+                        ) as t_survival    ON    max_survival=survival
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(rpg) AS max_rpg
+                            FROM        steamspy_tags
+                        ) as t_rpg    ON    max_rpg=rpg
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(indie) AS max_indie
+                            FROM        steamspy_tags
+                        ) as t_indie    ON    max_indie=indie
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(moba) AS max_moba
+                            FROM        steamspy_tags
+                        ) as t_moba    ON    max_moba=moba
+                        LIMIT 1
+                    )
+                    UNION
+                    (
+                        SELECT      appid
+                        FROM        steamspy_tags
+                        JOIN        (
+                            SELECT      MAX(shooter) AS max_shooter
+                            FROM        steamspy_tags
+                        ) as t_shooter    ON    max_shooter=shooter
+                        LIMIT 1
+                    )
+                )
+            ) AS    profiles
+                JOIN    steam_details AS details    ON    details.appid=profiles.appid;
             `;
 
             const { result, time } = await timeExecution(db.query(query));
