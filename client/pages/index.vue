@@ -9,7 +9,7 @@
 
       <div class="card mt-3">
         <div class="card-body">
-          <h1>Developers</h1>
+          <h1>Developerss</h1>
           <div class="form-group">
             <label>Browse by Developer</label>
             <input
