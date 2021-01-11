@@ -1,11 +1,10 @@
 <template>
-  <div class="card m-1" style="width: 14rem; background-color: #16202d;">
-    <i class="fab fa-steam-square text-success" style="font-size: 10rem; text-align: center;" />
+  <div class="card m-1" style="width: 14rem; min-height: 350px; background-color: #16202d;">
+    <i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem; text-align: center;" />
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
         <b> {{ name }} </b>
       </h4>
-
       <!-- <h5 class="text-success">
         <b>Overwhelmingly Positive</b>
       </h5> -->
