@@ -3,30 +3,30 @@
     <i class="fab fa-steam-square text-success" style="font-size: 10rem; text-align: center;" />
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
-        <b> <!--{{ game.name }}--></b>
+        <b> {{ name }} </b>
       </h4>
 
-      <h5 class="text-success">
+      <!-- <h5 class="text-success">
         <b>Overwhelmingly Positive</b>
-      </h5>
+      </h5> -->
       <p title="appid#" class="card-data mb-0">
-        # <!--{{ game.appid }}--> <br>
+        # {{ appid }} <br>
       </p>
       <p v-if="developer" class="card-data">
-        Publisher:  <!--{{ game.publisher }}--> <br>
-        Developer:  <!--{{ game.developer }}--> <br>
+        Publisher:  {{ publisher }} <br>
+        Developer:  {{ developer }} <br>
       </p>
       <p v-if="platforms" class="card-data">
-        OS: <!--{{ game.platforms }}--><br>
+        OS: {{ platforms }}<br>
       </p>
       <p v-if="pricerange" class="card-data">
-        Price: <!--{{ game.price }}--><br>
+        Price: {{ price }}<br>
       </p>
       <p v-if="usertags" class="card-data">
-        Categories: <!--{{ game.categories }}--><br>
+        Categories: {{ categories }}<br>
       </p>
       <p v-if="toptags" class="card-data">
-        Categories: <!--{{ game.categories }}--><br>
+        Categories: {{ categories }}<br>
       </p>
     </div>
   </div>
@@ -34,23 +34,34 @@
 
 <script>
 export default {
-  data () {
-    return {
-    }
-  },
-
-  computed: {
-    developer () {
-      return this.$route.path === '/'
+  props: {
+    name: {
+      type: String,
+      default: ''
     },
-    platforms () {
-      return this.$route.path === '/platforms'
+    appid: {
+      type: Number,
+      default: 0
     },
-    pricerange () {
-      return this.$route.path === '/pricerange'
+    publisher: {
+      type: String,
+      default: ''
     },
-    usertags () {
-      return this.$route.path === '/usertags'
+    developer: {
+      type: String,
+      default: ''
+    },
+    platforms: {
+      type: String,
+      default: ''
+    },
+    price: {
+      type: Number,
+      default: 0
+    },
+    categories: {
+      type: String,
+      default: ''
     }
   }
 }

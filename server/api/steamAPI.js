@@ -333,6 +333,9 @@ const steamAPI = {
         }
     },
 
+    /**
+     * Gets the top from each tags
+     */
     getTopTagGames: async (req, res) => {
         const { query: type } = req.query;
         try {
@@ -548,6 +551,73 @@ const steamAPI = {
             return res.status(500).send();
         }
     },
+
+    // owners, developers(group by), avg price, specific tag
+    // getAvgPrice: async (req, res) => {
+    //     const {
+    //         // developer,
+    //         tag,
+    //         offset,
+    //         limit
+    //     } = req.query;
+
+    //     try {
+    //         const text = `
+    //             SELECT      developer,
+    //                         avg_price * min AS min_sale,
+    //                         avg_price * max AS max_sale
+    //             FROM        (
+    //                 SELECT      developer, AVG(price)
+    //                 FROM        steam_profiles  AS profiles
+    //                     JOIN    (
+    //                         SELECT  *
+    //                         FROM    steamspy_tags as st
+    //                         WHERE   ${tag} > 0
+    //                     ) as tags
+    //                         ON  profiles.appid=tags.appid
+    //                     JOIN    steam_details   AS details
+    //                         ON  profiles.appid=details.appid
+    //                 GROUP BY    developer
+    //             ) as avg_price
+    //                 JOIN    (
+    //                     SELECT  *
+    //                     FROM    steam_profiles AS profiles2
+    //                         JOIN    (
+    //                             SELECT  *
+    //                             FROM    steamspy_tags as st2
+    //                             WHERE   ${tag} > 0
+    //                         ) as tags2
+    //                             ON  profiles2.appid=tags2.appid
+    //                         JOIN    (
+    //                             SELECT  *,
+    //                                     substring(owners for dash - 1)::bigint AS min,
+    //                                     substring(owners from dash + 1)::bigint AS max
+    //                             FROM    (
+    //                                 SELECT  *,
+    //                                         position('-' in owners) AS dash
+    //                                 FROM    steam_details as details3
+    //                             ) as details_in
+    //                         ) as details_out
+    //                             ON  profiles2.appid=details_out.appid
+    //                 ) as profiles_main
+    //                     ON profiles_main.developer=avg_price.developer
+    //             OFFSET      ${offset}
+    //             LIMIT       ${limit};
+    //         `;
+
+    //         const { result, time } = timeExecution(db.query(text));
+    //         const { rows: games, rowCount } = result;
+    //         if (rowCount === 0) {
+    //             return res.status(404).send();
+    //         } 
+
+    //         return res.status(200).send({ games, time });
+    //     } catch (err) {
+    //         console.log(err);
+
+    //         return res.status(500).send();
+    //     }
+    // },
 
     /**
      * Gets a random list of games

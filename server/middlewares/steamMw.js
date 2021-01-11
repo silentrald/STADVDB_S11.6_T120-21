@@ -6,13 +6,13 @@ const steamMw = {
         } = req.query;
 
         req.query.offset =  (
-            typeof(offset) === 'number' &&
+            !isNaN(offset) &&
             offset > -1
         ) ? offset : 0;
 
         req.query.limit = (
-            typeof(limit) === 'number' &&
-            limit < 1000
+            limit === 'ALL' || 
+            !isNaN(limit) && limit < 1000
         ) ? limit : 100;
 
         next();

@@ -19,13 +19,21 @@
     <div class="card mt-3">
       <div class="card-body">
         <h1>Top Tags</h1>
-        <label>Browse the Top Tags</label>
+        <!-- <label>Browse the Top Tags</label> -->
         <div
           v-for="game in games"
           :key="game.appid"
+          class="d-inline-flex flex-wrap align-items-stretch justify-content-around"
         >
-          <!--<card />-->
-          {{ game.name }}
+          <card
+            :name="game.name"
+            :appid="game.appid"
+            :publisher="game.publisher"
+            :developer="game.developer"
+            :platforms="game.platform"
+            :price="game.price"
+            :categories="game.categories"
+          />
         </div>
       </div>
     </div>

@@ -81,9 +81,33 @@
             Time: {{ time }}ms
           </span>
         </h1>
-        <div v-for="game in games" :key="game.appid">
-          <!--<card />-->
-          {{ game.name }}
+        <div v-if="error === 404">
+          Did Not Find Anything :(
+        </div>
+        <div v-else>
+          <div
+            v-for="game in games"
+            :key="game.appid"
+            class="d-inline-flex flex-wrap align-items-stretch justify-content-around"
+          >
+            <card
+              :name="game.name"
+              :appid="game.appid"
+              :publisher="game.publisher"
+              :developer="game.developer"
+              :platforms="game.platform"
+              :price="game.price"
+              :categories="game.categories"
+            />
+          </div>
+          <div>
+            <button class="search-buttons w-40 btn mt-3" @click="prev()">
+              PREV
+            </button>
+            <button class="search-buttons w-40 btn mt-3 float-right" @click="next()">
+              NEXT
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +121,8 @@ export default {
       platform: 'windows',
       query: 'Optimized',
       games: [],
+      page: 0,
+      elements: 100,
       time: 0
     }
   },
@@ -106,11 +132,28 @@ export default {
       this.query = this.query === 'Optimized' ? 'Original' : 'Optimized'
     },
 
+    next () {
+      this.page++
+      this.search()
+    },
+
+    prev () {
+      if (this.page > 0) { this.page-- }
+      this.search()
+    },
+
+    init () {
+      this.page = 0
+      this.search()
+    },
+
     async search () {
       const { data } = await this.$axios.get('/api/steam/pl', {
         params: {
           platform: this.platform,
-          query: this.query === 'Optimized' ? 'op' : 'or'
+          query: this.query === 'Optimized' ? 'op' : 'or',
+          offset: this.page * this.elements,
+          limit: this.elements
         }
       })
       this.$set(this, 'games', data.games)

@@ -48,7 +48,7 @@
         <button
           type="button"
           class="search-buttons w-40 btn mt-3"
-          @click="search()"
+          @click="init()"
         >
           Search
         </button>
@@ -59,9 +59,7 @@
             Results
             <span
               v-if="time > 0"
-              :style="{
-                float: 'right'
-              }"
+              class="float-right"
             >
               Time: {{ time }}ms
             </span>
@@ -69,13 +67,30 @@
           <div v-if="error === 404">
             Did Not Find Anything :(
           </div>
-          <div
-            v-for="game in games"
-            v-else
-            :key="game.appid"
-          >
-            <!--<card />-->
-            {{ game.name }}
+          <div v-else>
+            <div
+              v-for="game in games"
+              :key="game.appid"
+              class="d-inline-flex flex-wrap align-items-stretch justify-content-around"
+            >
+              <card
+                :name="game.name"
+                :appid="game.appid"
+                :publisher="game.publisher"
+                :developer="game.developer"
+                :platforms="game.platform"
+                :price="game.price"
+                :categories="game.categories"
+              />
+            </div>
+            <div>
+              <button class="search-buttons w-40 btn mt-3" @click="prev()">
+                PREV
+              </button>
+              <button class="search-buttons w-40 btn mt-3 float-right" @click="next()">
+                NEXT
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -91,6 +106,8 @@ export default {
       publisher: '',
       query: 'Optimized',
       games: [],
+      page: 0,
+      elements: 100,
       time: 0,
       error: 0
     }
@@ -101,6 +118,21 @@ export default {
       this.query = this.query === 'Optimized' ? 'Original' : 'Optimized'
     },
 
+    next () {
+      this.page++
+      this.search()
+    },
+
+    prev () {
+      if (this.page > 0) { this.page-- }
+      this.search()
+    },
+
+    init () {
+      this.page = 0
+      this.search()
+    },
+
     async search () {
       try {
         this.$set(this, 'error', 0)
@@ -109,7 +141,9 @@ export default {
           params: {
             developer: this.developer,
             publisher: this.publisher,
-            query: this.query === 'Optimized' ? 'op' : 'or'
+            query: this.query === 'Optimized' ? 'op' : 'or',
+            offset: this.page * this.elements,
+            limit: this.elements
           }
         })
         this.$set(this, 'games', data.games)
