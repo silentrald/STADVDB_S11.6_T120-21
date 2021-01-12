@@ -46,7 +46,7 @@
               }"
               to="/usertags"
             >
-              Top Rated Games
+              User Tags
             </nuxt-link>
           </li>
           <li class="nav-item">
@@ -69,6 +69,17 @@
               to="/toptags"
             >
               Top Tags
+            </nuxt-link>
+          </li>
+          <li class="nav-item">
+            <nuxt-link
+              class="nav-link"
+              :class="{
+                active: $route.path === '/toprated'
+              }"
+              to="/toprated"
+            >
+              Top Rated Games
             </nuxt-link>
           </li>
         </ul>
