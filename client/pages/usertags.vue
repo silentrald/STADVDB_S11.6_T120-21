@@ -2,15 +2,15 @@
   <div class="container">
     <div class="card-header mt-3">
       <h1 style="font-weight: 800;">
-        User Tags
+        Top Rated Games
       </h1>
     </div>
 
     <div class="card mt-3">
       <div class="card-body">
-        <h1>User Tags</h1>
+        <h1>Top Rated Games</h1>
         <div class="form-group">
-          <label>Browse by User Tags</label>
+          <label>Browse Top Rated Games</label>
           <div class="form-group" style="display: flex;">
             <input
               id="user-tags"

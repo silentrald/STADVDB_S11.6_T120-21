@@ -46,7 +46,7 @@
               }"
               to="/usertags"
             >
-              User Tags
+              Top Rated Games
             </nuxt-link>
           </li>
           <li class="nav-item">
