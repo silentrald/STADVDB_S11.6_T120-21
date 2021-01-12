@@ -11,20 +11,20 @@
       <p title="appid#" class="card-data mb-0">
         # {{ appid }} <br>
       </p>
-      <p v-if="developer" class="card-data">
+      <p v-if="developer_route" class="card-data">
         Publisher:  {{ publisher }} <br>
         Developer:  {{ developer }} <br>
       </p>
-      <p v-if="platforms" class="card-data">
+      <p v-if="platform_route" class="card-data">
         OS: {{ platforms }}<br>
       </p>
-      <p v-if="pricerange" class="card-data">
+      <p v-if="price_route" class="card-data">
         Price: {{ price }}<br>
       </p>
-      <p v-if="usertags" class="card-data">
+      <p v-if="user_route" class="card-data">
         Categories: {{ categories }}<br>
       </p>
-      <p v-if="toptags" class="card-data">
+      <p v-if="top_route" class="card-data">
         Categories: {{ categories }}<br>
       </p>
     </div>
@@ -61,6 +61,23 @@ export default {
     categories: {
       type: String,
       default: ''
+    }
+  },
+  computed: {
+    developer_route () {
+      return this.$route.path === '/'
+    },
+    platform_route () {
+      return this.$route.path === '/platforms'
+    },
+    price_route () {
+      return this.$route.path === '/usertagss'
+    },
+    user_route () {
+      return this.$route.path === '/pricerange'
+    },
+    top_route () {
+      return this.$route.path === '/toptags'
     }
   }
 }
