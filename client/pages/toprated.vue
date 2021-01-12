@@ -12,17 +12,16 @@
         <div class="form-group">
           <label>Browse Top Rated Games</label>
           <div class="form-group" style="display: flex;">
-            <input
+            <select
               id="user-tags"
               v-model="tagInput"
               class="steam-fields w-100 mr-3 p-1"
-              placeholder="FPS, Action, etc."
               list="taglist"
-              @keydown.enter="addTagInput()"
             >
-            <datalist id="taglist">
-              <option v-for="tag in tagList" :key="tag" :value="tag" />
-            </datalist>
+              <option v-for="tag in tagList" :key="tag" :value="tag">
+                {{ tag }}
+              </option>
+            </select>
 
             <button
               type="button"
@@ -39,11 +38,6 @@
             >
               Search
             </button>
-          </div>
-        </div>
-        <div class="d-flex flex-row flex-wrap">
-          <div v-for="tag in tags" :key="tag">
-            <chip :tag="tag" @close="removeTag" />
           </div>
         </div>
       </div>
@@ -98,8 +92,7 @@
 export default {
   data () {
     return {
-      tagInput: '',
-      tags: [],
+      tagInput: 'fps',
       query: 'Optimized',
       games: [],
       page: 0,
@@ -146,35 +139,14 @@ export default {
       this.search()
     },
 
-    addTagInput () {
-      if (!this.tags.includes(this.tagInput)) {
-        if (this.tagList.includes(this.tagInput)) {
-          this.addTag(this.tagInput)
-        }
-      }
-    },
-
-    addTag (tag) {
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-      this.tags.push(tag.toLowerCase().replace(' ', '_'))
-      this.tagInput = ''
-    },
-
-    removeTag (tag) {
-      this.tags.splice(this.tags.indexOf(tag), 1)
-      this.tagList.push(tag.toLowerCase().replace('_', ' '))
-    },
-
     async search () {
       try {
         this.$set(this, 'error', 0)
-
-        const { data } = await this.$axios.get('/api/steam/tags', {
+        const tag = this.tagInput.replace(' ', '_')
+        const { data } = await this.$axios.get('/api/steam/top-rated-tags', {
           params: {
-            tags: this.tags,
-            query: this.query === 'Optimized' ? 'op' : 'or',
-            offset: this.page * this.elements,
-            limit: this.elements
+            tag,
+            query: this.query === 'Optimized' ? 'op' : 'or'
           }
         })
         this.$set(this, 'games', data.games)
