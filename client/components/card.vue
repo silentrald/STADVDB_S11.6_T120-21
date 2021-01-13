@@ -1,6 +1,6 @@
 <template>
   <div class="card m-1" style="width: 14rem; min-height: 350px; background-color: #16202d;">
-    <a href="https://store.steampowered.com/app/" + {{ appid }} ><i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem; text-align: center;" /></a>
+    <i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem; text-align: center;" />
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
         <b> {{ name }} </b>
