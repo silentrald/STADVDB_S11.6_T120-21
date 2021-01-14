@@ -82,6 +82,17 @@
               Top Rated Games
             </nuxt-link>
           </li>
+          <li class="nav-item">
+            <nuxt-link
+              class="nav-link"
+              :class="{
+                active: $route.path === '/mostplayed'
+              }"
+              to="/mostplayed"
+            >
+              Most Played
+            </nuxt-link>
+          </li>
         </ul>
       </div>
     </nav>

@@ -624,6 +624,79 @@ const steamAPI = {
         }
     },
 
+    getMostPlayedGamesByTag: async (req, res) => {
+        const {
+            tag,
+            query: type
+        } = req.query;
+
+        try {
+            const text = type === 'op' ? `
+                SELECT      profiles2.appid,
+                            name, 
+                            profiles2.platforms,
+                            price,
+                            website
+                FROM        (
+                    SELECT      platforms,
+                                MAX(average_playtime) as max_playtime
+                    FROM        (
+                        SELECT      *
+                        FROM        steamspy_tags
+                        WHERE       ${tag} > 0
+                    ) tags
+                    JOIN    steam_profiles profiles
+                        ON  tags.appid=profiles.appid
+                    GROUP BY    platforms
+                ) max_playtime
+                    JOIN        steam_profiles profiles2
+                        ON      profiles2.average_playtime=max_playtime.max_playtime
+                        AND     profiles2.platforms=max_playtime.platforms
+                    JOIN        steam_details details
+                        ON      profiles2.appid=details.appid
+                    JOIN        steam_supports supports
+                        ON      profiles2.appid=supports.appid;
+            ` : `
+                SELECT      profiles2.appid,
+                            name, 
+                            profiles2.platforms,
+                            price,
+                            website
+                FROM        (
+                    SELECT      platforms,
+                                MAX(average_playtime) as max_playtime
+                    FROM        (
+                        SELECT      *
+                        FROM        steamspy_tags tags
+                            JOIN    steam_profiles profiles
+                                ON  tags.appid=profiles.appid
+                        WHERE       ${tag} > 0
+                    ) tag_profs_in
+                    GROUP BY    platforms
+                ) max_playtime
+                    JOIN        steam_profiles profiles2
+                        ON      profiles2.average_playtime=max_playtime.max_playtime
+                        AND     profiles2.platforms=max_playtime.platforms
+                    JOIN        steam_details details
+                        ON      profiles2.appid=details.appid
+                    JOIN        steam_supports supports
+                        ON      profiles2.appid=supports.appid;
+            `;
+
+            const { result, time } = await timeExecution(db.query(text));
+            const { rows: games, rowCount } = result;
+            if (rowCount < 1) {
+                return res.status(404).send();
+            }
+
+            return res.status(200).send({ games, time });
+        } catch (err) {
+            console.log(err);
+
+            return res.status(500).send();
+        }
+    },
+
     /**
      * Gets a random list of games
      */

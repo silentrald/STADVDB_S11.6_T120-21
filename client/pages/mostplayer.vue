@@ -142,7 +142,7 @@ export default {
       try {
         this.$set(this, 'error', 0)
         const tag = this.tagInput.replace(' ', '_')
-        const { data } = await this.$axios.get('/api/steam/top-rated-tags', {
+        const { data } = await this.$axios.get('/api/steam/most-played', {
           params: {
             tag,
             query: this.query === 'Optimized' ? 'op' : 'or'

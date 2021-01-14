@@ -33,6 +33,9 @@ router.get('/top-tags',
 router.get('/top-rated-tags',
     api.getTopRatedTags);
 
+router.get('/most-played',
+    api.getMostPlayedGamesByTag);
+
 router.get('/random',
     api.getRandomGames);
 
