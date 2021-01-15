@@ -63,7 +63,7 @@ export default {
     }
   },
   computed: {
-    main_route () { /*please paki translate to proper syntax.*/
+    main_route () {
       return this.$route.path === '/'
     },
     mostplayed_route () {
@@ -101,7 +101,7 @@ export default {
     transition: 0.1s;
   }
 
-  #steamlink: hover { /*THIS STEAM ID?*/
+  #steamlink: hover {
     color: blue;
   }
 
