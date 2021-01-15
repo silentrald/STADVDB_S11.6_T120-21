@@ -95,13 +95,13 @@ export default {
 
 <style>
 
-  .steamlink {
+  #steamlink {
     color: #c5c3c0;
     font-size: 10rem;
     transition: 0.1s;
   }
 
-  .steamlink: hover {
+  #steamlink: hover {
     color: blue;
   }
 
