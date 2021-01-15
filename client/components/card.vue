@@ -10,20 +10,20 @@
       <p title="appid#" class="card-data mb-0">
         # {{ appid }} <br>
       </p>
-      <p v-if="main_route" class="card-data">
+      <p class="card-data">
         Publisher:  {{ publisher }} <br>
         Developer:  {{ developer }} <br>
       </p>
-      <p v-if="platforms_route" class="card-data">
+      <p class="card-data">
         OS: {{ platforms }}<br>
       </p>
-      <p v-if="pricerange_route" class="card-data">
+      <p class="card-data">
         Price: {{ price }}<br>
       </p>
-      <p v-if="usertags_route" class="card-data">
+      <p class="card-data">
         Categories: {{ categories }}<br>
       </p>
-      <p v-if="toptags_route" class="card-data">
+      <p class="card-data">
         Categories: {{ categories }}<br>
       </p>
     </div>
@@ -63,7 +63,7 @@ export default {
     }
   },
   computed: {
-    main_route () {
+    main_route () { /*please paki translate to proper syntax.*/
       return this.$route.path === '/'
     },
     mostplayed_route () {
@@ -101,7 +101,7 @@ export default {
     transition: 0.1s;
   }
 
-  #steamlink: hover {
+  #steamlink: hover { /*THIS STEAM ID?*/
     color: blue;
   }
 
