@@ -1,7 +1,7 @@
 <template>
   <div class="card m-1" style="width: 14rem; min-height: 350px; background-color: #16202d;">
     <a href="javascript:;" style="text-align: center;" @click="openSteam()">
-      <i class="steamlink" class="fab fa-steam-square" />
+      <i id="steamlink" class="fab fa-steam-square" />
     </a>
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
