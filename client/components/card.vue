@@ -20,9 +20,11 @@
       <p v-if="price" class="card-data">
         Price: ${{ price }}<br>
       </p>
+      <!--
       <p v-if="categories" class="card-data">
         Categories: {{ categories }}<br>
       </p>
+      -->
       <p v-if="website" class="card-data">
         Website: <a :href="website"> {{ website }} </a>
       </p>
