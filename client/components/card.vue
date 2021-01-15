@@ -84,7 +84,7 @@ export default {
   }
 
   #steamlink:hover {
-    color: blue;
+    color: #66c0f4;
   }
 
 </style>
