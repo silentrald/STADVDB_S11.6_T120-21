@@ -10,21 +10,21 @@
       <p title="appid#" class="card-data mb-0">
         # {{ appid }} <br>
       </p>
-      <p class="card-data">
-        Publisher:  {{ publisher }} <br>
-        Developer:  {{ developer }} <br>
+      <p v-if="publisher || developer" class="card-data">
+        Publisher:  {{ publisher ? publisher : 'None' }} <br>
+        Developer:  {{ developer ? developer : 'None' }} <br>
       </p>
-      <p class="card-data">
+      <p v-if="platforms" class="card-data">
         OS: {{ platforms }}<br>
       </p>
-      <p class="card-data">
-        Price: {{ price }}<br>
+      <p v-if="price" class="card-data">
+        Price: ${{ price }}<br>
       </p>
-      <p class="card-data">
+      <p v-if="categories" class="card-data">
         Categories: {{ categories }}<br>
       </p>
-      <p class="card-data">
-        Categories: {{ categories }}<br>
+      <p v-if="website" class="card-data">
+        Website: <a :href="website"> {{ website }} </a>
       </p>
     </div>
   </div>
@@ -35,23 +35,23 @@ export default {
   props: {
     name: {
       type: String,
-      default: ''
+      required: true
     },
     appid: {
       type: Number,
-      default: 0
+      required: true
     },
     publisher: {
       type: String,
-      default: ''
+      default: undefined
     },
     developer: {
       type: String,
-      default: ''
+      default: undefined
     },
     platforms: {
       type: String,
-      default: ''
+      default: undefined
     },
     price: {
       type: Number,
@@ -59,32 +59,14 @@ export default {
     },
     categories: {
       type: String,
-      default: ''
+      default: undefined
+    },
+    website: {
+      type: String,
+      default: undefined
     }
   },
-  computed: {
-    main_route () {
-      return this.$route.path === '/'
-    },
-    mostplayed_route () {
-      return this.$route.path === '/mostplayed'
-    },
-    platforms_route () {
-      return this.$route.path === '/platforms'
-    },
-    pricerange_route () {
-      return this.$route.path === '/pricerange'
-    },
-    toprated_route () {
-      return this.$route.path === '/toprated'
-    },
-    toptags_route () {
-      return this.$route.path === '/toptags'
-    },
-    usertags_route () {
-      return this.$route.path === '/usertags'
-    }
-  },
+
   methods: {
     openSteam () {
       window.open(`https://store.steampowered.com/app/${this.appid}`)
@@ -101,7 +83,7 @@ export default {
     transition: 0.1s;
   }
 
-  #steamlink: hover {
+  #steamlink:hover {
     color: blue;
   }
 

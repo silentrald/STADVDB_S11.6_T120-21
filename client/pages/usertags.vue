@@ -78,7 +78,7 @@
             :appid="game.appid"
             :publisher="game.publisher"
             :developer="game.developer"
-            :platforms="game.platform"
+            :platforms="game.platforms"
             :price="game.price"
             :categories="game.categories"
           />

@@ -70,11 +70,9 @@
           <card
             :name="game.name"
             :appid="game.appid"
-            :publisher="game.publisher"
-            :developer="game.developer"
-            :platforms="game.platform"
+            :platforms="game.platforms"
             :price="game.price"
-            :categories="game.categories"
+            :website="game.website"
           />
         </div>
         <div>
