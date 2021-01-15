@@ -18,7 +18,12 @@
 
     <div class="card mt-3">
       <div class="card-body">
-        <h1>Top Tags</h1>
+        <h1>
+          Top Tags
+          <span v-if="games.length > 0">
+            ({{ games.length }} rows)
+          </span>
+        </h1>
         <!-- <label>Browse the Top Tags</label> -->
         <div
           v-for="game in games"

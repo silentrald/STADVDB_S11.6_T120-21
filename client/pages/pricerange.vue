@@ -85,6 +85,9 @@
       <div class="card-body">
         <h1>
           Results
+          <span v-if="games.length > 0">
+            ({{ games.length }} rows)
+          </span>
           <span
             v-if="time > 0"
             :style="{
