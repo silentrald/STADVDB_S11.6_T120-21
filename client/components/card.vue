@@ -1,6 +1,8 @@
 <template>
   <div class="card m-1" style="width: 14rem; min-height: 350px; background-color: #16202d;">
-    <i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem; text-align: center;" />
+    <a href="javascript:;" style="text-align: center;">
+      <i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem;" />
+    </a>
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
         <b> {{ name }} </b>
@@ -61,6 +63,11 @@ export default {
     categories: {
       type: String,
       default: ''
+    }
+  },
+  methods: {
+    openSteam () {
+      window.open(`https://store.steampowered.com/app/${this.appid}`)
     }
   }
 }
