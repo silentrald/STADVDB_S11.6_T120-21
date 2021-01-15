@@ -1,6 +1,6 @@
 1 TABLE QUERIES
 
-Select specific developer or publisher
+1. Select specific developer or publisher
 SELECT	*
 FROM		steam_profiles
 WHERE	developer 	ILIKE $1
@@ -9,7 +9,7 @@ ORDER BY	appid
 OFFSET	NUM
 LIMIT		NUM;
 
-Select all games available in all platforms
+2. Select all games available in all platforms
 
 SELECT	*
 FROM		steam_profiles
