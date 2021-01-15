@@ -1,15 +1,12 @@
 <template>
   <div class="card m-1" style="width: 14rem; min-height: 350px; background-color: #16202d;">
-    <a href="javascript:;" style="text-align: center;">
+    <a href="javascript:;" style="text-align: center;" @click="openSteam()">
       <i class="fab fa-steam-square" style="color: #c5c3c0; font-size: 10rem;" />
     </a>
     <div class="card-body pt-1 pb-1">
       <h4 class="card-title mb-1">
         <b> {{ name }} </b>
       </h4>
-      <!-- <h5 class="text-success">
-        <b>Overwhelmingly Positive</b>
-      </h5> -->
       <p title="appid#" class="card-data mb-0">
         # {{ appid }} <br>
       </p>
@@ -63,6 +60,29 @@ export default {
     categories: {
       type: String,
       default: ''
+    }
+  },
+  computed: {
+    main_route () {
+      return this.$route.path === '/'
+    },
+    mostplayed_route () {
+      return this.$route.path === '/mostplayed'
+    },
+    platforms_route () {
+      return this.$route.path === '/platforms'
+    },
+    pricerange_route () {
+      return this.$route.path === '/pricerange'
+    },
+    toprated_route () {
+      return this.$route.path === '/toprated'
+    },
+    toptags_route () {
+      return this.$route.path === '/toptags'
+    },
+    usertags_route () {
+      return this.$route.path === '/usertags'
     }
   },
   methods: {
