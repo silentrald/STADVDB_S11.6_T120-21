@@ -23,6 +23,14 @@
           <span v-if="games.length > 0">
             ({{ games.length }} rows)
           </span>
+          <span
+            v-if="time > 0"
+            :style="{
+              float: 'right'
+            }"
+          >
+            Time: {{ time }}ms
+          </span>
         </h1>
         <!-- <label>Browse the Top Tags</label> -->
         <div
