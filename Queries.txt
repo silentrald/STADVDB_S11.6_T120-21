@@ -1,0 +1,307 @@
+1 TABLE QUERIES
+
+Select specific developer or publisher
+SELECT	*
+FROM		steam_profiles
+WHERE	developer 	ILIKE $1
+OR	publisher 	ILIKE $2
+ORDER BY	appid
+OFFSET	NUM
+LIMIT		NUM;
+
+Select all games available in all platforms
+
+SELECT	*
+FROM		steam_profiles
+WHERE	platform	LIKE	$1
+ORDER BY	appid
+OFFSET	NUM
+LIMIT		NUM;
+
+========================================================
+
+2 TABLE QUERIES 
+
+1. Select games based on the steamspy_tags 
+
+==== ORIGINAL QUERY ====
+
+SELECT 	*
+FROM		steam_profiles	AS profiles
+	JOIN	steamspy_tags	AS tags	
+ON	profiles.appid = tags.appid
+WHERE	action > 0
+	OR	multiplayer > 0
+	OR	fps > 0
+OR	sci_fi > 0
+OR	classic > 0
+OR	co_op > 0
+OR	arcade > 0
+OR	card_game > 0
+OR	drama > 0
+OR	puzzle > 0
+OR	survival > 0
+OR	rpg > 0
+	OR	indie > 0
+OR	moba > 0
+OR	shooter > 0
+ORDER BY	profiles.appid
+OFFSET	NUM
+LIMIT		NUM;
+
+==== OPTIMIZED QUERY  ====
+
+SELECT 	*
+FROM		steam_profiles	AS profiles
+	JOIN	(
+SELECT	*
+FROM		steamspy_tags
+WHERE	action > 0
+			OR	multiplayer > 0
+	OR	fps > 0
+OR	sci_fi > 0
+OR	classic > 0
+OR	co_op > 0
+OR	arcade > 0
+OR	card_game > 0
+OR	drama > 0
+OR	puzzle > 0
+OR	survival > 0
+OR	rpg > 0
+	OR	indie > 0
+OR	moba > 0
+OR	shooter > 0
+	) AS tags	ON profiles.appid=tags.appid
+ORDER BY	profiles.appid
+OFFSET	NUM
+LIMIT		NUM;
+
+2. Select games depending on its prices and/or ratings
+
+==== ORIGINAL ====
+
+SELECT	*
+FROM		steam_details AS details
+JOIN	(
+	SELECT	*
+	FROM		steam_profiles
+	WHERE	positive_ratings + negative_ratings > 0
+	AND	(positive_ratings * 100 / positive_ratings + negative_ratings) BETWEEN $1 AND $2
+) AS profiles	ON	details.appid=profiles.appid
+WHERE	price	BETWEEN $3 AND $4
+ORDER BY	appid
+OFFSET	NUM
+LIMIT		NUM;
+
+==== OPTIMIZED ====
+
+SELECT	*
+	FROM		(
+SELECT	*
+	FROM		steam_details
+	WHERE	price	BETWEEN $1 AND $2
+) AS details
+JOIN	(
+	SELECT	*,
+		(positive_ratings * 100 / positive_ratings + negative_ratings) as true_rating,
+FROM		steam_profiles
+	WHERE	positive_ratings + negative_ratings > 0
+) AS profiles	ON	details.appid=profiles.appid
+		AND	true_rating BETWEEN $3 AND $4
+ORDER BY	details.appid
+OFFSET	NUM
+LIMIT		NUM;
+
+========================================================
+
+3 TABLES
+
+1. Get the top tag from each tag
+
+==== ORIGINAL ====
+
+SELECT	*
+FROM		(
+	SELECT	*
+	FROM		steam_profiles
+	WHERE	appid IN (
+	(
+SELECT	appid
+	FROM		steamspy_tags
+	JOIN	(
+	SELECT	MAX(action) 		AS max_action
+	FROM		steamspy_tags
+) as t_action	ON	max_action=action
+LIMIT		1
+)
+UNION
+(
+SELECT	appid
+	FROM		steamspy_tags
+	JOIN	(
+	SELECT	MAX(multiplayer) 	AS max_multiplayer
+	FROM		steamspy_tags
+) as t_multiplayer	ON	max_multiplayer=multiplayer
+LIMIT		1
+)
+UNION
+(
+	SELECT	appid
+	FROM		steamspy_tags
+JOIN	(
+	SELECT	MAX(fps) 	AS max_fps
+	FROM		steamspy_tags
+) as t_fps	ON	max_fps=fps
+LIMIT		1
+)
+UNION
+…
+UNION
+(
+	SELECT	appid
+	FROM		steamspy_tags
+JOIN	(
+	SELECT	MAX(shooter) 	AS max_shooter
+	FROM		steamspy_tags
+) as t_action	ON	max_shooter=shooter
+LIMIT		1
+)
+)
+) AS	profiles
+JOIN	steam_details AS details	ON	details.appid=profiles.appid;
+
+==== OPTIMIZED ====
+
+SELECT	*
+FROM		steam_profiles	AS profiles
+JOIN	(
+	SELECT	*
+	FROM		steamspy_tags
+JOIN	(
+SELECT	MAX(action) 	AS max_action,
+MAX(multiplayer)	AS max_multiplayer,
+…
+MAX(shooter)	AS max_shooter
+FROM		steamspy_tags
+) as top_tags		ON	max_action=action
+			OR	max_multiplayer=multiplayer
+			…
+			OR	max_shooter=shooter
+) AS top_ids		ON	profiles.appid=top_ids.appid
+JOIN	steam_details AS details
+ON	profiles.appid=details.appid;
+
+2. Select top rated games from each year (2015 - 2019)
+
+==== ORIGINAL ====
+
+const text = type === 'op' ? `
+                SELECT  *
+                FROM    (
+                    SELECT      year,
+                                MAX(ratings) AS max_ratings
+                    FROM        (
+                        SELECT      *,
+                                    EXTRACT(YEAR FROM release_date) AS year,
+                                    (positive_ratings - negative_ratings) AS ratings
+                        FROM        steam_profiles
+                            JOIN    (
+                                SELECT  *
+                                FROM    steamspy_tags
+                                WHERE   ${tag} > 0
+                            ) tags ON steam_profiles.appid=tags.appid
+                        WHERE       release_date > date '2014-01-01'
+                    ) years
+                    GROUP BY    year
+                ) max_ratings
+                    JOIN    steam_profiles profiles
+                        ON  max_ratings.max_ratings = profiles.positive_ratings - profiles.negative_ratings
+                        AND max_ratings.year = EXTRACT(YEAR FROM profiles.release_date)
+                    JOIN    steam_details   details
+                        ON  details.appid=profiles.appid;
+
+==== OPTIMIZED ====
+
+SELECT  *
+FROM    (
+    SELECT      year,
+                MAX(positive_ratings - negative_ratings) AS max_ratings
+    FROM        (
+        SELECT      *,
+                    EXTRACT(YEAR FROM release_date) AS year
+        FROM        steam_profiles
+            JOIN    (
+                SELECT  *
+                FROM    steamspy_tags
+                WHERE   fps > 0
+            ) tags ON steam_profiles.appid=tags.appid
+        WHERE       EXTRACT(YEAR FROM release_date) > 2014
+    ) years
+    GROUP BY    year
+) max_ratings
+    JOIN    steam_profiles profiles
+        ON  max_ratings.max_ratings = profiles.positive_ratings - profiles.negative_ratings
+        AND max_ratings.year = EXTRACT(YEAR FROM profiles.release_date);
+
+=================================================================
+
+4 TABLES
+
+Most played game based on platform
+
+==== ORIGINAL ====
+
+SELECT	profiles2.appid,
+	name,
+	profiles2.platforms,
+	price,
+	website
+FROM        (
+	SELECT	platforms,
+		MAX(average_playtime) as max_playtime
+FROM        (
+	SELECT      *
+	FROM        steamspy_tags
+	WHERE       ${tag} > 0
+) tags
+JOIN    steam_profiles profiles
+	ON  tags.appid=profiles.appid
+	GROUP BY    platforms
+) max_playtime
+JOIN		steam_profiles profiles2
+	ON		profiles2.average_playtime=max_playtime.max_playtime
+	AND		profiles2.platforms=max_playtime.platforms
+JOIN		steam_details details
+	ON		profiles2.appid=details.appid
+JOIN		steam_supports supports
+	ON		profiles2.appid=supports.appid
+
+==== OPTIMIZED ==== 
+
+SELECT      profiles2.appid,
+            name, 
+            profiles2.platforms,
+            price,
+            website
+FROM        (
+    SELECT      platforms,
+                MAX(average_playtime) as max_playtime
+    FROM        (
+        SELECT      *
+        FROM        steamspy_tags tags
+            JOIN    steam_profiles profiles
+                ON  tags.appid=profiles.appid
+        WHERE       action > 0
+    ) tag_profs_in
+    GROUP BY    platforms
+) max_playtime
+    JOIN        steam_profiles profiles2
+        ON      profiles2.average_playtime=max_playtime.max_playtime
+        AND     profiles2.platforms=max_playtime.platforms
+    JOIN        steam_details details
+        ON      profiles2.appid=details.appid
+    JOIN        steam_supports supports
+        ON      profiles2.appid=supports.appid;
+
+
+
